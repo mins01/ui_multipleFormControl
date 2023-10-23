@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko" >
 <head>
-	<title>multiple form control</title>
+	<title>multiple form control handler</title>
 	<meta charset="utf-8">
 	<meta http-equiv="Content-Script-Type" content="text/javascript">
 	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -46,65 +46,146 @@
 			MultipleFormControlHandler.activate();
 		})
 	</script>
+	<style>
+		.mfch-container{display: flex;
+			flex-wrap: wrap;
+			flex-direction: row;
+			align-content: center;
+			justify-content: flex-start;
+			align-items: center;}
+		.mfch-container .mfch-item{flex: 0 0 auto; margin: 2px;}
+
+		.column{
+			display: flex;
+			flex-direction: column;
+			align-items: stretch;
+			justify-content: center;
+			align-content: center;
+			flex-wrap: nowrap;
+		}
+		.mfch-container.column .mfch-item{flex: 0 0 100%; margin: 2px;}
+
+	</style>
+	<script>
+		function alertOnsubmit(f){
+			const fd = new FormData(f)
+			console.log(fd);
+			alert("데이터: "+ (new URLSearchParams(fd)).toString())
+		}
+	</script>
 </head>
 <body>
 	<div class="container">
         <h1>multiple form control</h1>
         <div>
 			<hr>
+			<h2>data-mfch-seperator : 키보드 입력 구분자 설정</h2>
 			<h3>DEFAULT (empty setting)(same: data-mfch-seperator="(Space)")</h3>
-			<form action="" onsubmit="alert('전송');return false;">
+			<form action="" onsubmit="alertOnsubmit(this);return false;">
 				<div class="mfch-container">
-					<div class="mfch-item"><input type="text" class="mfch-item-input form-control" placeholder="테스트" value="1"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
-					<div class="mfch-item"><input type="text" class="mfch-item-input form-control" placeholder="테스트" value="2"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
-					<div class="mfch-item"><input type="text" class="mfch-item-input form-control" placeholder="테스트" value="3"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
-					<div class="mfch-item"><input type="text" class="mfch-item-input form-control" placeholder="테스트" value=""><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="1"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="2"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="3"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value=""><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
+					<button class="btn btn-info" type="submit">전송</button>
+				</div>
+			</form>
+			<h3>data-mfch-seperator="(Enter| |,|ArrowRight|Z)"</h3>
+			<form action="" onsubmit="alertOnsubmit(this);return false;">
+				<div class="mfch-container" data-mfch-seperator="(Enter| |,|ArrowRight|Z)">
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
 					<button class="btn btn-info" type="submit">전송</button>
 				</div>
 			</form>
 			<hr>
-			<h3>data-mfch-seperator="(Enter| |,|ArrowRight)"</h3>
-
-			<form action="" onsubmit="alert('전송');return false;">
-				<div class="mfch-container" data-mfch-seperator="(Enter| |,|ArrowRight)">
-					<div class="mfch-item">
-						<input type="text" class="mfch-item-input form-control" placeholder="테스트" required>
-						<button type="button" class="mfch-item-btn mfch-item-btn-remove"></button>
-					</div>
-					<button class="btn btn-info" type="submit">전송</button>
-				</div>
-				<div class="my-1">
-					
-				</div>
-			</form>
+			<h2>data-mfch-focusout : focusout 동작 설정</h2>
 			<h3>data-mfch-focusout="append"</h3>
-			<form action="" onsubmit="alert('전송');return false;">
+			<form action="" onsubmit="alertOnsubmit(this);return false;">
 				<div class="mfch-container" data-mfch-focusout="append">
-					<div class="mfch-item"><input type="text" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
-					<div class="mfch-item"><input type="text" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
-					<div class="mfch-item"><input type="text" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="1"></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="2"></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="3"></div>
 					<button class="btn btn-info" type="submit">전송</button>
 				</div>
 			</form>
 			<h3>data-mfch-focusout="remove"</h3>
-			<form action="" onsubmit="alert('전송');return false;">
+			<form action="" onsubmit="alertOnsubmit(this);return false;">
 				<div class="mfch-container" data-mfch-focusout="remove">
-					<div class="mfch-item"><input type="text" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
-					<div class="mfch-item"><input type="text" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
-					<div class="mfch-item"><input type="text" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="1"></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="2"></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="3"></div>
 					<button class="btn btn-info" type="submit">전송</button>
 				</div>
 			</form>
 			<h3>data-mfch-focusout="(append|remove)"</h3>
-			<form action="" onsubmit="alert('전송');return false;">
+			<form action="" onsubmit="alertOnsubmit(this);return false;">
 				<div class="mfch-container" data-mfch-focusout="(append|remove)">
-					<div class="mfch-item"><input type="text" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
-					<div class="mfch-item"><input type="text" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
-					<div class="mfch-item"><input type="text" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="1"></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="2"></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="3"></div>
 					<button class="btn btn-info" type="submit">전송</button>
 				</div>
 			</form>
-            
+            <hr>
+			<h3>mfch-item-btn-append : 추가 버튼</h3>
+			<form action="" onsubmit="alertOnsubmit(this);return false;">
+				<div class="mfch-container">
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<button class="btn btn-info" type="submit">전송</button>
+				</div>
+			</form>
+			
+			<h3>외부 추가 버튼</h3>
+			<form action="" onsubmit="alertOnsubmit(this);return false;">
+				<div class="mfch-container" id="mfch-container-btn-append">
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<button class="btn btn-info" type="submit">전송</button>
+				</div>
+				<div>
+					<button class="btn btn-success" type="button" onclick="MultipleFormControlHandler.getInstance().containerAppendItem(document.querySelector('#mfch-container-btn-append'))">추가</button>
+				</div>
+			</form>
+			<hr>
+			<h3>data-mfch-min-item-number="3"</h3>
+			<form action="" onsubmit="alertOnsubmit(this);return false;">
+				<div class="mfch-container" data-mfch-min-item-number="3">
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<button class="btn btn-info" type="submit">전송</button>
+				</div>
+			</form>
+			<h3>data-mfch-max-item-number="5"</h3>
+			<form action="" onsubmit="alertOnsubmit(this);return false;">
+				<div class="mfch-container" data-mfch-max-item-number="5">
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<button class="btn btn-info" type="submit">전송</button>
+				</div>
+			</form>
+			<h3> data-mfch-min-item-number="3" data-mfch-max-item-number="3"</h3>
+			<form action="" onsubmit="alertOnsubmit(this);return false;">
+				<div class="mfch-container" data-mfch-min-item-number="3" data-mfch-max-item-number="3">
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<button class="btn btn-info" type="submit">전송</button>
+				</div>
+			</form>
+
+			<hr>
+			<h3>세로형 스타일</h3>
+			<form action="" onsubmit="alertOnsubmit(this);return false;">
+				<div class="mfch-container column" data-mfch-min-item-number="3"  data-mfch-max-item-number="9">
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<button class="btn btn-info" type="submit">전송</button>
+				</div>
+			</form>
         </div>
 	</div>
 </body>

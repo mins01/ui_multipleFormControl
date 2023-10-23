@@ -13,11 +13,18 @@ class MultipleFormControlHandler{
         instance.printDebug('activate');
         if(!globalThis?.window){ throw('window is not exists'); }
         instance.addEventListener(globalThis?.window);
+        this.adjust()
     }
     static deactivate(){
         let instance = this.getInstance();
         instance.printDebug('deactivate');
         instance.removeEventListener();
+    }
+    static adjust(){
+        const instance = this.getInstance();
+        document.querySelectorAll('.mfch-container').forEach((container)=>{
+            instance.adjustContainer(container)
+        })
     }
 
     //---------------------------
@@ -75,7 +82,7 @@ class MultipleFormControlHandler{
     cb_keydown = (event)=>{ this.keydown(event); }
 
     keydown(event){
-        console.log(event);
+        this.printDebug(event);
         if (event.defaultPrevented) {
             return; // Do nothing if the event was already processed
         }
@@ -85,7 +92,7 @@ class MultipleFormControlHandler{
     cb_focusout = (event)=>{ this.focusout(event); }
 
     focusout(event){
-        console.log(event);
+        this.printDebug(event);
         if (event.defaultPrevented) {
             return; // Do nothing if the event was already processed
         }
@@ -95,7 +102,7 @@ class MultipleFormControlHandler{
     cb_click = (event)=>{ this.click(event); }
 
     click(event){
-        console.log(event);
+        this.printDebug(event);
         if (event.defaultPrevented) {
             return; // Do nothing if the event was already processed
         }
@@ -128,22 +135,23 @@ class MultipleFormControlHandler{
         let seperator = container.dataset.mfchSeperator??'( )';
         const regexp = new RegExp(seperator);
         if(regexp.test(event.key)){
-            // console.log('!seperator!');
+            // this.printDebug('!seperator!');
             this.stopEvent(event);
             if(input.value.length == 0){
-                console.log('빈 문자열');
+                this.printDebug('빈 문자열');
             }else if(!input.checkValidity()){
-                console.log('!checkValidity ');
+                this.printDebug('!checkValidity ');
             }else{
-                this.appendItem(container,item)
+                this.containerAppendItem(container,item)
             }
         }
 
         // 삭제 동작
-        if(event.key=='Backspace'){
+        if(event.key=='Backspace' && !event.repeat){
             if(input.value.length == 0){
-                console.log('삭제 진행');
-                this.removeItem(item)
+                this.printDebug('삭제 진행');
+                this.stopEvent(event);
+                this.containerRemoveItem(container,item)
             }
         }
     }
@@ -161,17 +169,18 @@ class MultipleFormControlHandler{
 
         if(regexp.test('append')){
             if(input.value.length == 0){
-                console.log('빈 문자열');
+                this.printDebug('빈 문자열');
             }else if(!input.checkValidity()){
-                console.log('!checkValidity ');
+                this.printDebug('!checkValidity ');
             }else{
-                this.appendItem(container,item)
+                this.containerAppendItem(container,item)
             }
         }
         if(regexp.test('remove')){
             if(input.value.length == 0){
-                console.log('삭제 진행');
-                this.removeItem(item,false)
+                this.printDebug('삭제 진행');
+                this.stopEvent(event);
+                this.containerRemoveItem(container,item,true)
             }
         }
 
@@ -187,8 +196,13 @@ class MultipleFormControlHandler{
         const key = event.key;
 
         if(event.target.classList.contains('mfch-item-btn-remove')){
-            console.log('제거 버튼 클릭');
-            this.removeItem(item)
+            this.printDebug('제거 버튼 클릭');
+            this.stopEvent(event);
+            this.containerRemoveItem(container,item)
+        }else if(event.target.classList.contains('mfch-item-btn-append')){
+            this.printDebug('추가 버튼 클릭');
+            this.stopEvent(event);
+            this.containerAppendItem(container,item,true)
         }
     }
     
@@ -199,65 +213,152 @@ class MultipleFormControlHandler{
         event.preventDefault();
     }
 
+
+
+
+
+
+
+
+
+
     /**
      * form-control element 가져오기
      */
-    firstItem(container){
+    getFirstItem(container){
         return container.querySelector('.mfch-item')
     }
-    appendItem(container,item){
+    /**
+     * 
+     * @param {HTMLElement} container 
+     * @param {HTMLElement} item 
+     * @param {boolean} forceAppend 강제 추가 여부(빈값 체크등을 안한다.)
+     */
+    containerAppendItem(container,item,forceAppend){
         // 다음요소를 찾아서 비어있다면 이 요소를 대신 사용한다.
-
-        let next_item = item;
-        do{
-            next_item = next_item.nextElementSibling;
-        }while(next_item && !next_item.classList.contains('mfch-item'))
-
+        let next_item = this.getNextItem(item);
+        
         let new_item = null;
-        if(next_item && next_item.querySelector('input , select , textarea').value ==''){
-            new_item = next_item;    
+        if(!forceAppend && next_item && next_item.querySelector('input , select , textarea').value ==''){
+            new_item = next_item;
         }else{
-            new_item = this.firstItem(container).cloneNode(true);
-            new_item.querySelectorAll('input , select , textarea').forEach(el => {
-                // el.value = el.defaultValue;
-                el.value = '';
-            });
-            item.after(new_item)
+            let maxItemNumber = parseInt(container.dataset.mfchMaxItemNumber??0);
+            let itemNumber = this.getItems(container).length;
+            if(maxItemNumber !== 0 && itemNumber >= maxItemNumber ){
+                this.printDebug('최대에 도달',itemNumber , maxItemNumber );
+                return false;
+            }
+            new_item = this.appendItem(container,item);
         }
         new_item.querySelector('input , select , textarea').focus();
-        this.clearItems(container);
+        this.adjustContainer(container);
     }
-    removeItem(item,autofocus){
+    appendItem(container,item){
+        if(!item){
+            let items = this.getItems(container);
+            item = items[items.length-1];
+        } 
 
+
+        let new_item = item.cloneNode(true);
+        new_item.querySelectorAll('input , select , textarea').forEach(el => {
+            // el.value = el.defaultValue;
+            el.value = '';
+        });
+        if(item){
+            item.after(new_item)
+        }else{
+            container.appendChild(new_item)
+        }
+        return new_item
+    }
+    getItems(container){
+        return container.querySelectorAll('.mfch-item');
+    }
+    getNextItem(item){
+        let next_item = item;
+        if(next_item){
+            do{
+                next_item = next_item.nextElementSibling;
+            }while(next_item && !next_item.classList.contains('mfch-item'))
+        }
+        return next_item;
+    }
+    getPreviousItem(item){
         let prev_item = item;
-        do{
-            prev_item = prev_item.previousElementSibling;
-        }while(prev_item && !prev_item.classList.contains('mfch-item'))
-        if(!prev_item){
-            console.log('이전요소 없음');
-            return;
+        if(prev_item){
+            do{
+                prev_item = prev_item.previousElementSibling;
+            }while(prev_item && !prev_item.classList.contains('mfch-item'))
+        }
+        return prev_item;
+    }
+    containerRemoveItem(container,item,disableAutofocus){
+        if(!item || !item.parentElement){return}
+
+        const focus_item = this.removeItem(container,item);
+        if(!focus_item) return false;
+        if(!disableAutofocus) focus_item.querySelector('input , select , textarea').focus();
+        this.adjustContainer(container);
+    }
+    removeItem(container,item){
+        let minItemNumber = parseInt(container.dataset.mfchMinItemNumber??1);
+        let itemNumber = this.getItems(container).length;
+        if(minItemNumber !== 0 && itemNumber <= minItemNumber ){
+            this.printDebug('최소에 도달',itemNumber , minItemNumber );
+            return false;
+        }
+
+        let focus_item = this.getPreviousItem(item)??this.getNextItem(item);
+        if(!focus_item){
+            this.printDebug('마지막 아이템 삭제 불가');
+            return false;
         }
         item.remove();
-        if(autofocus) prev_item.querySelector('input , select , textarea').focus();
+        return focus_item;
     }
     /**
      * 불필요한 빈 요소 삭제
      * @param {HTMLElement} container 
      */
-    clearItems(container){
-        const remain = container.dataset.clearRemain??1;
-        let inputs = container.querySelectorAll(':scope .mfch-item input');
-        console.log(inputs);
-        let finded_empty = 0;
-        inputs.forEach((el)=>{
-            if(el.value==''){
-                if(finded_empty < remain){
-                    finded_empty++;
-                }else{
-                    this.getItem(el).remove();
-                }
+    adjustContainer(container){
+        let minItemNumber = parseInt(container.dataset.mfchMinItemNumber??1);
+        let maxItemNumber = parseInt(container.dataset.mfchMaxItemNumber??0);
+        let items = this.getItems(container);
+        let itemNumber = items.length;
+        
+        if(itemNumber < minItemNumber){
+            this.printDebug('min 처리');
+            let lastItem = items[items.length-1];
+            let gap = minItemNumber - itemNumber;
+            while(gap--){
+                this.appendItem(container,lastItem)
             }
-        })
+        }
+        if(maxItemNumber !== 0 && itemNumber > maxItemNumber){
+            this.printDebug('max 처리');
+            let gap = itemNumber - maxItemNumber;
+            while(gap--){
+                let removeItem = items[gap];
+                this.removeItem(container,removeItem)
+            }
+        }
+
+        
+        items = this.getItems(container);
+        itemNumber = items.length;
+
+        container.dataset.mfchItemNumber = itemNumber;
+        if(itemNumber == minItemNumber && itemNumber == maxItemNumber){
+            container.dataset.mfchStateItemNumber = 'min max'
+        }else if(itemNumber == minItemNumber){
+            container.dataset.mfchStateItemNumber = 'min'
+        }else if(itemNumber == maxItemNumber){
+            container.dataset.mfchStateItemNumber = 'max'
+        }else{
+            container.dataset.mfchStateItemNumber = null
+        }
+
     }
 
 
