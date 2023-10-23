@@ -97,35 +97,6 @@
 					<button class="btn btn-info" type="submit">전송</button>
 				</div>
 			</form>
-			<hr>
-			<h2>data-mfch-focusout : focusout 동작 설정</h2>
-			<h3>data-mfch-focusout="append"</h3>
-			<form action="" onsubmit="alertOnsubmit(this);return false;">
-				<div class="mfch-container" data-mfch-focusout="append">
-					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="1"></div>
-					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="2"></div>
-					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="3"></div>
-					<button class="btn btn-info" type="submit">전송</button>
-				</div>
-			</form>
-			<h3>data-mfch-focusout="remove"</h3>
-			<form action="" onsubmit="alertOnsubmit(this);return false;">
-				<div class="mfch-container" data-mfch-focusout="remove">
-					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="1"></div>
-					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="2"></div>
-					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="3"></div>
-					<button class="btn btn-info" type="submit">전송</button>
-				</div>
-			</form>
-			<h3>data-mfch-focusout="(append|remove)"</h3>
-			<form action="" onsubmit="alertOnsubmit(this);return false;">
-				<div class="mfch-container" data-mfch-focusout="(append|remove)">
-					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="1"></div>
-					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="2"></div>
-					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="3"></div>
-					<button class="btn btn-info" type="submit">전송</button>
-				</div>
-			</form>
             <hr>
 			<h3>mfch-item-btn-append : 추가 버튼</h3>
 			<form action="" onsubmit="alertOnsubmit(this);return false;">
@@ -177,7 +148,18 @@
 					<button class="btn btn-info" type="submit">전송</button>
 				</div>
 			</form>
-
+			<hr>
+			<h3>data-mfch-backspace="disabled" // 백스페이스로 아이템을 삭제하지 못하게 한다.</h3>
+			<form action="" onsubmit="alertOnsubmit(this);return false;">
+				<div class="mfch-container" data-mfch-min-item-number="3" data-mfch-backspace="disabled">
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<button class="btn btn-info" type="submit">전송</button>
+				</div>
+			</form>
 			<hr>
 			<h3>세로형 스타일</h3>
 			<form action="" onsubmit="alertOnsubmit(this);return false;">

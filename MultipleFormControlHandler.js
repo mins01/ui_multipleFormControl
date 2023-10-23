@@ -62,12 +62,10 @@ class MultipleFormControlHandler{
     addEventListener(listener){
         this.listener = listener;
         this.listener.addEventListener('keydown',this.cb_keydown);
-        this.listener.addEventListener('focusout',this.cb_focusout);
         this.listener.addEventListener('click',this.cb_click);
     }
     removeEventListener(){
         this.listener.removeEventListener('keydown',this.cb_keydown);
-        this.listener.removeEventListener('focusout',this.cb_focusout);
         this.listener.removeEventListener('click',this.cb_click);
     }
 
@@ -87,16 +85,6 @@ class MultipleFormControlHandler{
             return; // Do nothing if the event was already processed
         }
         return this.processForKeyboard(event);
-    }
-
-    cb_focusout = (event)=>{ this.focusout(event); }
-
-    focusout(event){
-        this.printDebug(event);
-        if (event.defaultPrevented) {
-            return; // Do nothing if the event was already processed
-        }
-        return this.processForFocusout(event);
     }
 
     cb_click = (event)=>{ this.click(event); }
@@ -147,7 +135,7 @@ class MultipleFormControlHandler{
         }
 
         // 삭제 동작
-        if(event.key=='Backspace' && !event.repeat){
+        if( container.dataset.mfchBackspace!='disabled' && event.key=='Backspace' && !event.repeat){
             if(input.value.length == 0){
                 this.printDebug('삭제 진행');
                 this.stopEvent(event);
@@ -155,37 +143,7 @@ class MultipleFormControlHandler{
             }
         }
     }
-    processForFocusout(event){
-        const container = this.getContainer(event.target);
-        if(!container){ this.printDebug('skip 1'); return;}
-        const item = this.getItem(event.target);
-        if(!item){ this.printDebug('skip 2'); return;}
-        const input = item.querySelector('input');
-        if(!input){ this.printDebug('skip 3'); return;}
-        const key = event.key;
-        let seperator = container.dataset.mfchFocusout??'';
-        if(seperator == ''){return seperator;}
-        const regexp = new RegExp(seperator);
 
-        if(regexp.test('append')){
-            if(input.value.length == 0){
-                this.printDebug('빈 문자열');
-            }else if(!input.checkValidity()){
-                this.printDebug('!checkValidity ');
-            }else{
-                this.containerAppendItem(container,item)
-            }
-        }
-        if(regexp.test('remove')){
-            if(input.value.length == 0){
-                this.printDebug('삭제 진행');
-                this.stopEvent(event);
-                this.containerRemoveItem(container,item,true)
-            }
-        }
-
-        
-    }
     processForClick(event){
         const container = this.getContainer(event.target);
         if(!container){ this.printDebug('skip 1'); return;}
