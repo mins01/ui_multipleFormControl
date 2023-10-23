@@ -42,7 +42,7 @@
 
 	<script>
 		window.addEventListener('load',(event)=>{
-			MultipleFormControlHandler.getInstance().debug = true;;
+			// MultipleFormControlHandler.getInstance().debug = true;;
 			MultipleFormControlHandler.activate();
 		})
 	</script>
@@ -80,7 +80,7 @@
         <div>
 			<hr>
 			<h2>data-mfch-seperator : 키보드 입력 구분자 설정</h2>
-			<h3>DEFAULT (empty setting)(same: data-mfch-seperator="(Space)")</h3>
+			<h3>DEFAULT (empty setting)(default: data-mfch-seperator="( )")</h3>
 			<form action="" onsubmit="alertOnsubmit(this);return false;">
 				<div class="mfch-container">
 					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트" value="1"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
@@ -90,9 +90,9 @@
 					<button class="btn btn-info" type="submit">전송</button>
 				</div>
 			</form>
-			<h3>data-mfch-seperator="(Enter| |,|ArrowRight|Z)"</h3>
+			<h3>data-mfch-seperator="(Enter| |,|ArrowRight|Z|Tab)"</h3>
 			<form action="" onsubmit="alertOnsubmit(this);return false;">
-				<div class="mfch-container" data-mfch-seperator="(Enter| |,|ArrowRight|Z)">
+				<div class="mfch-container" data-mfch-seperator="(Enter| |,|ArrowRight|Z|Tab)">
 					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button></div>
 					<button class="btn btn-info" type="submit">전송</button>
 				</div>
@@ -151,7 +151,7 @@
 			<hr>
 			<h3>data-mfch-backspace="disabled" // 백스페이스로 아이템을 삭제하지 못하게 한다.</h3>
 			<form action="" onsubmit="alertOnsubmit(this);return false;">
-				<div class="mfch-container" data-mfch-min-item-number="3" data-mfch-backspace="disabled">
+				<div class="mfch-container" data-mfch-backspace="disabled">
 					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
 					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
 					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
