@@ -27,12 +27,12 @@
 	
 	<!-- meta og -->
 	
-	<meta property="og:title" content="multiple form control">
-	<meta property="og:description" content="multiple form control">
+	<meta property="og:title" content="multiple form control handler">
+	<meta property="og:description" content="multiple form control handler">
 	<meta name="og:image" content="http://www.mins01.com/img/logo.gif">
 	<meta property="og:image:width" content="190">
 	<meta property="og:image:height" content="70" />
-	<meta property="og:site_name" content="multiple form control" />
+	<meta property="og:site_name" content="multiple form control handler" />
 	<meta property="og:type" content="website">
 	
 	<!-- //meta og -->
@@ -76,7 +76,7 @@
 </head>
 <body>
 	<div class="container">
-        <h1>multiple form control</h1>
+        <h1>multiple form control handler</h1>
         <div>
 			<hr>
 			<h2>data-mfch-seperator : 키보드 입력 구분자 설정</h2>
@@ -177,6 +177,26 @@
 					<button class="btn btn-info" type="submit">전송</button>
 				</div>
 			</form>
+			<hr>
+			<h3>이벤트 핸들링</h3>
+			<h3>mfch-adjust,mfch-appenditem,mfch-removeitem</h3>
+			<form action="" onsubmit="alertOnsubmit(this);return false;">
+				<div class="mfch-container" data-mfch-min-item-number="3"  data-mfch-max-item-number="9" id="mfch-container-customevent">
+					<div class="mfch-item"><input type="text" name="item" class="mfch-item-input form-control" placeholder="테스트"><button type="button" class="mfch-item-btn mfch-item-btn-remove"></button><button type="button" class="mfch-item-btn mfch-item-btn-append"></button></div>
+					<button class="btn btn-info" type="submit">전송</button>
+				</div>
+			</form>
+			<script>
+				document.querySelector('#mfch-container-customevent').addEventListener('mfch-adjust',(event)=>{
+					console.log('이벤트발생',event.type,event.target,event);
+				})
+				document.querySelector('#mfch-container-customevent').addEventListener('mfch-appenditem',(event)=>{
+					console.log('이벤트발생',event.type,event.target,event.detail.item,event);
+				})
+				document.querySelector('#mfch-container-customevent').addEventListener('mfch-removeitem',(event)=>{
+					console.log('이벤트발생',event.type,event.target,event.detail.item,event);
+				})
+			</script>
 
         </div>
 	</div>

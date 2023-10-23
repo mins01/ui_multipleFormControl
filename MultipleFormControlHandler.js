@@ -13,17 +13,17 @@ class MultipleFormControlHandler{
         instance.printDebug('activate');
         if(!globalThis?.window){ throw('window is not exists'); }
         instance.addEventListener(globalThis?.window);
-        this.adjust()
+        this.adjustAll()
     }
     static deactivate(){
         let instance = this.getInstance();
         instance.printDebug('deactivate');
         instance.removeEventListener();
     }
-    static adjust(){
+    static adjustAll(){
         const instance = this.getInstance();
         document.querySelectorAll('.mfch-container').forEach((container)=>{
-            instance.adjustContainer(container)
+            instance.adjust(container)
         })
     }
 
@@ -209,7 +209,7 @@ class MultipleFormControlHandler{
             new_item = this.appendItem(container,item);
         }
         new_item.querySelector('input , select , textarea').focus();
-        this.adjustContainer(container);
+        this.adjust(container);
     }
     appendItem(container,item){
         if(!item){
@@ -228,6 +228,13 @@ class MultipleFormControlHandler{
         }else{
             container.appendChild(new_item)
         }
+        container.dispatchEvent((new CustomEvent('mfch-appenditem', { 
+            bubbles:true, 
+            cancelable:true, 
+            composed:true,
+            detail:{'item':new_item},
+        })));
+
         return new_item
     }
     getItems(container){
@@ -257,7 +264,7 @@ class MultipleFormControlHandler{
         const focus_item = this.removeItem(container,item);
         if(!focus_item) return false;
         if(!disableAutofocus) focus_item.querySelector('input , select , textarea').focus();
-        this.adjustContainer(container);
+        this.adjust(container);
     }
     removeItem(container,item){
         let minItemNumber = parseInt(container.dataset.mfchMinItemNumber??1);
@@ -273,13 +280,19 @@ class MultipleFormControlHandler{
             return false;
         }
         item.remove();
+        container.dispatchEvent((new CustomEvent('mfch-removeitem', { 
+            bubbles:true, 
+            cancelable:true, 
+            composed:true,
+            detail:{'item':item},
+        })));
         return focus_item;
     }
     /**
      * 불필요한 빈 요소 삭제
      * @param {HTMLElement} container 
      */
-    adjustContainer(container){
+    adjust(container){
         let minItemNumber = parseInt(container.dataset.mfchMinItemNumber??1);
         let maxItemNumber = parseInt(container.dataset.mfchMaxItemNumber??0);
         let items = this.getItems(container);
@@ -317,6 +330,12 @@ class MultipleFormControlHandler{
             container.dataset.mfchStateItemNumber = null
         }
 
+        container.dispatchEvent((new CustomEvent('mfch-adjust', { 
+            bubbles:true, 
+            cancelable:true, 
+            composed:true,
+            detail:{},
+        })));
     }
 
 
