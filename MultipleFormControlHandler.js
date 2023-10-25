@@ -296,13 +296,25 @@ class MultipleFormControlHandler{
 
         return new_item
     }
+    itemFormControl(item){
+        return item.querySelector('input,textarea,select')
+    }
     itemValue(item){
-        return item.querySelector('input,textarea,select').value;
+        return this.itemFormControl(item).value;
     }
     getItems(container){
         return container.querySelectorAll('.mfch-item');
     }
     getNextItem(item){
+        let next_item = item;
+        if(next_item){
+            do{
+                next_item = next_item.nextElementSibling;
+            }while(next_item && !next_item.classList.contains('mfch-item'))
+        }
+        return next_item;
+    }
+    getEmptyItem(container){
         let next_item = item;
         if(next_item){
             do{
