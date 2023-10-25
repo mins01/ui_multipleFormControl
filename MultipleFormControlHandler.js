@@ -62,11 +62,15 @@ class MultipleFormControlHandler{
     addEventListener(listener){
         this.listener = listener;
         this.listener.addEventListener('keydown',this.cb_keydown);
+        this.listener.addEventListener('input',this.cb_keydown);
         this.listener.addEventListener('click',this.cb_click);
+        this.listener.addEventListener('focusin',this.cb_focusin);
     }
     removeEventListener(){
+        this.listener.removeEventListener('input',this.cb_keydown);
         this.listener.removeEventListener('keydown',this.cb_keydown);
         this.listener.removeEventListener('click',this.cb_click);
+        this.listener.removeEventListener('focusin',this.cb_focusin);
     }
 
 
@@ -78,13 +82,21 @@ class MultipleFormControlHandler{
     }
 
     cb_keydown = (event)=>{ this.keydown(event); }
-
     keydown(event){
         this.printDebug(event);
         if (event.defaultPrevented) {
             return; // Do nothing if the event was already processed
         }
         return this.processForKeyboard(event);
+    }
+
+    cb_focusin = (event)=>{ this.focusin(event); }
+    focusin(event){
+        this.printDebug(event);
+        if (event.defaultPrevented) {
+            return; // Do nothing if the event was already processed
+        }
+        return this.processForFocusin(event);
     }
 
     cb_click = (event)=>{ this.click(event); }
@@ -98,6 +110,67 @@ class MultipleFormControlHandler{
     }
 
     processForKeyboard(event){
+        const container = this.getContainer(event.target);
+        if(!container){ this.printDebug('skip 1'); return;}
+        const item = this.getItem(event.target);
+        if(!item){ this.printDebug('skip 2'); return;}
+        const input = item.querySelector('input, textarea, select');
+        if(!input){ this.printDebug('skip 3'); return;}
+
+        const key = event.key;
+
+        // switch (event.key) {
+        //     case " ": break;
+        //     case "Enter":  break;
+        //     case "Backspace": break;
+
+        //     // case "ArrowDown": break;
+        //     // case "ArrowUp": break;
+        //     // case "ArrowLeft": break;
+        //     // case "ArrowRight": break;
+        //     // case "Escape": break;
+        //     default: break; // Quit when this doesn't handle the key event.
+        // }
+        if(input.value.length == 0){
+            // 다음 요소의 빈 item 삭제
+            let next_item = this.getNextItem(item);
+            if(next_item && this.itemValue(next_item)==''){
+                console.log('다음 빈 아이템 삭제');
+                this.containerRemoveItem(container,next_item)
+            }
+            
+        }else{
+            let seperator = container.dataset.mfchSeperator??null;
+            if(seperator){
+                const regexp = new RegExp(seperator);
+                if(regexp.test(event.key)){
+                    // this.printDebug('!seperator!');
+                    this.stopEvent(event);
+                    if(!input.checkValidity()){
+                        this.printDebug('!checkValidity ');
+                    }else{
+                        let new_item = this.containerAppendItem(container,item);
+                        this.focusItem(new_item);
+                    }
+                }
+            }else{
+                this.containerAppendItem(container,item)
+            }
+        }
+
+
+
+        // 삭제 동작
+        if( container.dataset.mfchBackspace!='disabled' && event.key=='Backspace' && !event.repeat){
+            if(input.value.length == 0){
+                this.printDebug('현재 빈 아이템 삭제');
+                this.stopEvent(event);
+                this.containerRemoveItem(container,item)
+            }
+        }
+    }
+
+    processForFocusin(event){
         const container = this.getContainer(event.target);
         if(!container){ this.printDebug('skip 1'); return;}
         const item = this.getItem(event.target);
@@ -119,28 +192,10 @@ class MultipleFormControlHandler{
         //     // case "Escape": break;
         //     default: break; // Quit when this doesn't handle the key event.
         // }
-
-        let seperator = container.dataset.mfchSeperator??'( )';
-        const regexp = new RegExp(seperator);
-        if(regexp.test(event.key)){
-            // this.printDebug('!seperator!');
-            this.stopEvent(event);
-            if(input.value.length == 0){
-                this.printDebug('빈 문자열');
-            }else if(!input.checkValidity()){
-                this.printDebug('!checkValidity ');
-            }else{
-                this.containerAppendItem(container,item)
-            }
-        }
-
-        // 삭제 동작
-        if( container.dataset.mfchBackspace!='disabled' && event.key=='Backspace' && !event.repeat){
-            if(input.value.length == 0){
-                this.printDebug('삭제 진행');
-                this.stopEvent(event);
-                this.containerRemoveItem(container,item)
-            }
+        if(input.value.length == 0){
+            this.printDebug('빈 문자열');
+        }else{
+            this.containerAppendItem(container,item)
         }
     }
 
@@ -179,7 +234,10 @@ class MultipleFormControlHandler{
 
 
 
-
+    focusItem(item){
+        if(!item) return;
+        item.querySelector('input , select , textarea').focus();
+    }
     /**
      * form-control element 가져오기
      */
@@ -208,8 +266,9 @@ class MultipleFormControlHandler{
             }
             new_item = this.appendItem(container,item);
         }
-        new_item.querySelector('input , select , textarea').focus();
+        // new_item.querySelector('input , select , textarea').focus();
         this.adjust(container);
+        return new_item;
     }
     appendItem(container,item){
         if(!item){
@@ -236,6 +295,9 @@ class MultipleFormControlHandler{
         })));
 
         return new_item
+    }
+    itemValue(item){
+        return item.querySelector('input,textarea,select').value;
     }
     getItems(container){
         return container.querySelectorAll('.mfch-item');
